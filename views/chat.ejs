@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fathin's Connection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/emoji-mart/dist/umd/emoji-mart.css"
+    />
+    <%- include("import.ejs") %>
+  </head>
+  <style>
+    body {
+      background-color: #36393f;
+      color: #dcddde;
+    }
+
+    .navbar {
+      background-color: #36393f;
+    }
+
+    .navbar-brand {
+      color: #7289da;
+      font-weight: bold;
+    }
+
+    .container {
+      margin-top: 70px;
+      margin-bottom: 100px;
+    }
+    .bg-dark {
+      background-color: #2f3136 !important;
+    }
+    .card-body {
+      padding: 15px;
+      background-color: #2f3136;
+      border-radius: 8px;
+    }
+
+    .list-group-item {
+      background-color: #2f3136 !important;
+      color: #dcddde;
+      word-wrap: break-word;
+    }
+
+    .form-control {
+      color: #dcddde;
+      background-color: #40444b;
+      border: none;
+    }
+    .form-control:focus {
+      color: #dcddde;
+      background-color: #40444b;
+      border: none;
+    }
+    .form-control::placeholder {
+      color: #899499;
+      opacity: 1;
+    }
+
+    .input-group-append button {
+      background-color: #7289da;
+      color: #dcddde;
+      border: none;
+    }
+
+    .input-group-append button:hover {
+      background-color: #677bc4;
+    }
+
+    .card-footer {
+      background-color: #2f3136;
+    }
+    img {
+      max-width: 400px;
+      object-fit: cover;
+      margin: 20px;
+      border-radius: 16px;
+    }
+    .loading-spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #dcddde;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#" id="juduul">Fathin's Connection</a>
+
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <button
+            class="btn btn-outline-danger rounded-pill"
+            onclick="logOut()"
+          >
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+    <div class="container" style="margin-bottom: 150px">
+      <div class="card-body">
+        <ul id="messages" class="list-group">
+          <% chat.forEach(element => { %> <% if (element.isImage) { %>
+          <!-- If this is an image message -->
+          <li class="list-group-item border-0">
+            <strong class="name" style="color: <%= element.color %>">
+              <span style="color: gray !important"
+                ><%= element.timestamp.replace("AM", "").replace("PM", "")
+                %></span
+              >
+              <%= element.username %>
+            </strong>
+          </li>
+          <img
+            src="<%= element.value %>"
+            class="message-image"
+            alt="Image"
+            onerror="this.remove()"
+          />
+          <% } else { %>
+          <!-- If this is a text message -->
+          <li class="list-group-item border-0">
+            <strong class="name" style="color: <%= element.color %>">
+              <span style="color: gray">
+                <%= element.timestamp.replace("AM", "").replace("PM", "")
+                %></span
+              >
+              <%= element.username %>
+            </strong>
+            <span class="text-value"><%= element.value %></span>
+          </li>
+          <!-- Include the image with onerror attribute to remove if there's an error -->
+          <img
+            src="<%= element.value %>"
+            class="message-image"
+            alt="Image"
+            onerror="this.remove()"
+          />
+          <% } %> <% }); %>
+        </ul>
+      </div>
+    </div>
+    <div
+      class="card-footer fixed-bottom mt-3 d-flex align-items-center"
+      style="flex-direction: row"
+    >
+      <form
+        id="image-form"
+        enctype="multipart/form-data"
+        class="flex-shrink-0 mr-2"
+      >
+        <label
+          for="image"
+          class="btn btn-secondary mt-2 p-2"
+          style="height: 100%"
+        >
+          <input
+            type="file"
+            name="image"
+            id="image"
+            accept="image/*"
+            style="display: none"
+            onchange="handleImageUpload()"
+          />
+          <i class="fa fa-file-image-o" aria-hidden="true"></i>
+        </label>
+        <button
+          type="button"
+          onclick="uploadImage()"
+          class="btn btn-primary p-2"
+          style="height: 100%"
+        >
+          <i class="fa fa-upload" aria-hidden="true"></i>
+        </button>
+        <span
+          id="upload-spinner"
+          class="loading-spinner"
+          style="display: none"
+        ></span>
+        <span id="file-size-error" style="color: red; display: none"
+          >File size exceeds the limit.</span
+        >
+      </form>
+      <form id="form" action="" class="form-inline flex-grow-1">
+        <div class="input-group w-100">
+          <input
+            id="input"
+            autocomplete="off"
+            class="form-control p-4"
+            placeholder="Message at # 💬 General!"
+          />
+          <div class="input-group-append">
+            <button class="btn" type="button" onclick="send()">
+              <i class="fa fa-paper-plane" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const userData = localStorage.getItem("loggedInUser");
+
+      function uploadImage() {
+        const input = document.getElementById("image");
+        const file = input.files[0];
+        const maxFileSizeMB = 1; // Set the maximum file size to 100 KB
+
+        if (file) {
+          if (file.size > maxFileSizeMB * 1024 * 1024) {
+            document.getElementById("file-size-error").style.display =
+              "inline-block";
+            return;
+          } else {
+            document.getElementById("file-size-error").style.display = "none";
+          }
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageData = e.target.result;
+            const username = userData; // Gantilah dengan cara Anda mendapatkan nama pengguna
+
+            // Kirim data gambar ke server menggunakan Socket.IO
+            socket.emit("image", { username, imageData });
+          };
+
+          reader.readAsDataURL(file);
+        }
+      }
+      document.getElementById("juduul").innerHTML = userData;
+
+      function logOut() {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "/";
+      }
+
+      if (!userData) {
+        window.location.href = "/";
+      }
+
+      const socket = io();
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const messages = document.getElementById("messages");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        send();
+      });
+      function send() {
+        if (input.value) {
+          socket.emit("chat message", {
+            username: userData,
+            value: input.value,
+          });
+          input.value = "";
+        }
+      }
+      socket.on("chat message", (msg) => {
+        const item = document.createElement("li");
+        const usernameElement = document.createElement("strong");
+        const timestampElement = document.createElement("span");
+
+        // Set the text content and styles for the timestamp
+        timestampElement.textContent = msg.timestamp
+          .replace("AM", "")
+          .replace("PM", "");
+        timestampElement.style.color = "gray";
+
+        usernameElement.appendChild(timestampElement);
+        usernameElement.innerHTML += ` ${msg.username}`;
+        usernameElement.style.color = msg.color;
+
+        item.appendChild(usernameElement);
+        item.innerHTML += ` ${msg.value}`;
+
+        if (msg.value.includes("@" + userData || "@everyone")) {
+          item.style.setProperty(
+            "background-color",
+            "rgba(243, 202, 82, 0.5)",
+            "important"
+          );
+        }
+
+        item.classList.add("list-group-item");
+        item.classList.add("border-0", "text-white");
+
+        const imageElement = document.createElement("img");
+        imageElement.src = msg.value;
+        imageElement.onerror = function () {
+          this.remove(); // Hapus elemen gambar jika terjadi error
+        };
+
+        messages.appendChild(item);
+        messages.appendChild(imageElement);
+
+        // Scroll to the bottom after adding a new message with a slight delay
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      socket.on("image", (data) => {
+        const item = document.createElement("li");
+        const usernameElement = document.createElement("strong");
+        const timestampElement = document.createElement("span");
+
+        // Set the text content and styles for the timestamp
+        timestampElement.textContent = data.timestamp
+          .replace("AM", "")
+          .replace("PM", "");
+        timestampElement.style.color = "gray";
+        usernameElement.appendChild(timestampElement);
+
+        usernameElement.innerHTML += ` ${data.username}`;
+        usernameElement.style.color = data.color;
+
+        item.appendChild(usernameElement);
+
+        item.classList.add("list-group-item", "border-0");
+        const imageElement = document.createElement("img");
+        imageElement.src = data.imageData;
+
+        messages.appendChild(item);
+        messages.appendChild(imageElement);
+
+        // Scroll to the bottom after adding a new message with a slight delay
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      // Scroll to the bottom when the page is initially loaded
+      window.onload = function () {
+        setTimeout(() => {
+          window.scrollTo(0, document.body.scrollHeight);
+        }, 100);
+      };
+    </script>
+  </body>
+</html>
