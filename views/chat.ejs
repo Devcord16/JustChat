@@ -246,7 +246,7 @@
           reader.readAsDataURL(file);
         }
       }
-      document.getElementById("juduul").innerHTML = userData;
+      document.getElementById("juduul").textContent = userData;
 
       function logOut() {
         localStorage.removeItem("loggedInUser");
@@ -287,11 +287,11 @@
         timestampElement.style.color = "gray";
 
         usernameElement.appendChild(timestampElement);
-        usernameElement.innerHTML += ` ${msg.username}`;
+        usernameElement.textContent += ` ${msg.username}`;
         usernameElement.style.color = msg.color;
 
         item.appendChild(usernameElement);
-        item.innerHTML += ` ${msg.value}`;
+        item.textContent += ` ${msg.value}`;
 
         if (msg.value.includes("@" + userData || "@everyone")) {
           item.style.setProperty(
@@ -329,7 +329,7 @@
         timestampElement.style.color = "gray";
         usernameElement.appendChild(timestampElement);
 
-        usernameElement.innerHTML += ` ${data.username}`;
+        usernameElement.textContent += ` ${data.username}`;
         usernameElement.style.color = data.color;
 
         item.appendChild(usernameElement);
