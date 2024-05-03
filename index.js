@@ -94,48 +94,6 @@ app.get("/chat", async (req, res) => {
   });
 });
 
-passport.serializeUser(function (user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function (obj, cb) {
-  cb(null, obj);
-});
-
-// Google OAuth configuration
-const GoogleStrategy = require("passport-google-oauth2").Strategy;
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.clientId,
-      clientSecret: process.env.clientSecret,
-      callbackURL: "http://localhost:3000/auth/google/callback",
-    },
-    (accessToken, refreshToken, profile, done) => {
-      // Save user profile data in the 'userProfile' object (you can save it in a database)
-      userProfile[profile.id] = profile;
-      return done(null, profile);
-    }
-  )
-);
-
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/",
-  }),
-  (req, res) => {
-    // Berhasil masuk, redirect ke halaman chat
-    res.redirect("/chat");
-  }
-);
-
 // Implementasi signup
 app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
