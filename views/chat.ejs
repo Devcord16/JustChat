@@ -99,6 +99,9 @@
         transform: rotate(360deg);
       }
     }
+    .message-image {
+      width: auto;
+    }
   </style>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
@@ -118,7 +121,7 @@
     <div class="container" style="margin-bottom: 150px">
       <div class="card-body">
         <ul id="messages" class="list-group">
-          <% chat.forEach(element => { %> <% if (element.isImage) { %>
+          <% chat.forEach(element => { %>
           <!-- If this is an image message -->
           <li class="list-group-item border-0">
             <strong class="name" style="color: <%= element.color %>">
@@ -128,33 +131,16 @@
               >
               <%= element.username %>
             </strong>
+            <% if(!element.isImage) {%> <%= element.value %> <% } %>
+            <br />
+
+            <img
+              src="<%= element.value %>"
+              class="message-image"
+              alt="Image"
+              onerror="this.remove()"
+            /><% }); %>
           </li>
-          <img
-            src="<%= element.value %>"
-            class="message-image"
-            alt="Image"
-            onerror="this.remove()"
-          />
-          <% } else { %>
-          <!-- If this is a text message -->
-          <li class="list-group-item border-0">
-            <strong class="name" style="color: <%= element.color %>">
-              <span style="color: gray">
-                <%= element.timestamp.replace("AM", "").replace("PM", "")
-                %></span
-              >
-              <%= element.username %>
-            </strong>
-            <span class="text-value"><%= element.value %></span>
-          </li>
-          <!-- Include the image with onerror attribute to remove if there's an error -->
-          <img
-            src="<%= element.value %>"
-            class="message-image"
-            alt="Image"
-            onerror="this.remove()"
-          />
-          <% } %> <% }); %>
         </ul>
       </div>
     </div>
@@ -279,19 +265,21 @@
         const item = document.createElement("li");
         const usernameElement = document.createElement("strong");
         const timestampElement = document.createElement("span");
+        const valueItem = document.createElement("span");
 
-        // Set the text content and styles for the timestamp
         timestampElement.textContent = msg.timestamp
           .replace("AM", "")
           .replace("PM", "");
         timestampElement.style.color = "gray";
-
-        usernameElement.appendChild(timestampElement);
-        usernameElement.textContent += ` ${msg.username}`;
         usernameElement.style.color = msg.color;
+        usernameElement.appendChild(timestampElement);
 
-        item.appendChild(usernameElement);
-        item.textContent += ` ${msg.value}`;
+        usernameElement.appendChild(
+          document.createTextNode(` ${msg.username} `)
+        );
+
+        valueItem.textContent += msg.value;
+        valueItem.classList.add("text-value");
 
         if (msg.value.includes("@" + userData || "@everyone")) {
           item.style.setProperty(
@@ -302,14 +290,15 @@
         }
 
         item.classList.add("list-group-item");
-        item.classList.add("border-0", "text-white");
+        item.classList.add("border-0");
 
         const imageElement = document.createElement("img");
         imageElement.src = msg.value;
         imageElement.onerror = function () {
           this.remove(); // Hapus elemen gambar jika terjadi error
         };
-
+        item.appendChild(usernameElement);
+        item.appendChild(valueItem);
         messages.appendChild(item);
         messages.appendChild(imageElement);
 
@@ -322,21 +311,23 @@
         const usernameElement = document.createElement("strong");
         const timestampElement = document.createElement("span");
 
-        // Set the text content and styles for the timestamp
-        timestampElement.textContent = data.timestamp
+        timestampElement.textContent = msg.timestamp
           .replace("AM", "")
           .replace("PM", "");
         timestampElement.style.color = "gray";
+        usernameElement.style.color = msg.color;
         usernameElement.appendChild(timestampElement);
 
-        usernameElement.textContent += ` ${data.username}`;
-        usernameElement.style.color = data.color;
+        usernameElement.appendChild(
+          document.createTextNode(` ${msg.username} `)
+        );
 
         item.appendChild(usernameElement);
 
         item.classList.add("list-group-item", "border-0");
         const imageElement = document.createElement("img");
         imageElement.src = data.imageData;
+        imageElement.classList.add("message-image");
 
         messages.appendChild(item);
         messages.appendChild(imageElement);
