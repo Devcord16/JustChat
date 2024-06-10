@@ -123,7 +123,7 @@
         <ul id="messages" class="list-group">
           <% chat.forEach(element => { %>
           <!-- If this is an image message -->
-          <li class="list-group-item border-0">
+          <li id="wa" class="list-group-item border-0">
             <strong class="name" style="color: <%= element.color %>">
               <span style="color: gray !important"
                 ><%= element.timestamp.replace("AM", "").replace("PM", "")
@@ -131,7 +131,8 @@
               >
               <%= element.username %>
             </strong>
-            <% if(!element.isImage) {%> <%= element.value %> <% } %>
+            <% if(!element.isImage) {%>
+            <span class="text-value"> <%= element.value %> </span><% } %>
             <br />
 
             <img
@@ -201,10 +202,50 @@
         </div>
       </form>
     </div>
+    <audio id="notification">
+      <source src="tut_turu.mp3" type="audio/mp3" />
+    </audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const userData = localStorage.getItem("loggedInUser");
+      const notifElement = document.getElementById("notification");
+
+      function checkMessages() {
+        const messages = document.querySelectorAll("#messages > li");
+        console.log(messages);
+
+        // Iterate through existing messages
+        messages.forEach((child) => {
+          const valueItem = child.querySelector(".text-value");
+          const imageElement = child.querySelector(".message-image");
+
+          // Check if the message contains a tag or pmessages for userData
+          if (
+            (valueItem && valueItem.textContent.includes("@" + userData)) ||
+            valueItem.textContent.includes("@everyone")
+          ) {
+            child.style.setProperty(
+              "background-color",
+              "rgba(243, 202, 82, 0.2)",
+              "important"
+            );
+          }
+
+          if (valueItem && valueItem.textContent.includes("pmessages: ")) {
+            // Check if pmessages is for userData
+            if (!valueItem.textContent.includes("@" + userData)) {
+              // Remove the message if it's not for userData
+              child.remove();
+              if (imageElement) {
+                imageElement.remove();
+              }
+            }
+          }
+        });
+      }
+
+      checkMessages();
 
       function uploadImage() {
         const input = document.getElementById("image");
@@ -282,11 +323,15 @@
         valueItem.classList.add("text-value");
 
         if (msg.value.includes("@" + userData || "@everyone")) {
-          item.style.setProperty(
-            "background-color",
-            "rgba(243, 202, 82, 0.5)",
-            "important"
-          );
+          if (!msg.value.includes("pmessages:")) {
+            item.style.setProperty(
+              "background-color",
+              "rgba(243, 202, 82, 0.2)",
+              "important"
+            );
+          }
+          console.log(msg.username);
+          notifElement.play();
         }
 
         item.classList.add("list-group-item");
@@ -297,10 +342,19 @@
         imageElement.onerror = function () {
           this.remove(); // Hapus elemen gambar jika terjadi error
         };
-        item.appendChild(usernameElement);
-        item.appendChild(valueItem);
-        messages.appendChild(item);
-        messages.appendChild(imageElement);
+        if (msg.value.includes("pmessages: ")) {
+          if (msg.value.includes("@" + userData)) {
+            item.appendChild(usernameElement);
+            item.appendChild(valueItem);
+            messages.appendChild(item);
+            messages.appendChild(imageElement);
+          }
+        } else {
+          item.appendChild(usernameElement);
+          item.appendChild(valueItem);
+          messages.appendChild(item);
+          messages.appendChild(imageElement);
+        }
 
         // Scroll to the bottom after adding a new message with a slight delay
         window.scrollTo(0, document.body.scrollHeight);

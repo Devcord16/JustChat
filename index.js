@@ -184,11 +184,49 @@ app.post("/login", (req, res) => {
   }
 });
 
+const messageInfo = {};
+
 io.on("connection", (socket) => {
   socket.on("chat message", async (msg) => {
+    // Mendapatkan ID klien yang terkait dengan socket
+    const clientId = socket.id;
     const timestamp = DateTime.now()
       .setZone("Asia/Jakarta")
       .toLocaleString(DateTime.TIME_SIMPLE);
+    // Inisialisasi informasi pesan untuk klien ini jika belum ada
+    if (!messageInfo[clientId]) {
+      messageInfo[clientId] = {
+        count: 0,
+        lastSent: Date.now() - 1000, // Inisialisasi dengan waktu 2 detik yang lalu
+      };
+    }
+    if (Date.now() - messageInfo[clientId].lastSent >= 2000) {
+      messageInfo[clientId].count = 0;
+    }
+    // Mengecek apakah sudah melewati batas waktu 2 detik sejak pesan terakhir
+    if (
+      Date.now() - messageInfo[clientId].lastSent < 2000 &&
+      messageInfo[clientId].count >= 5
+    ) {
+      // Perbarui informasi pesan untuk klien ini
+      messageInfo[clientId].count++;
+      messageInfo[clientId].lastSent = Date.now();
+      // Kirim pesan ke klien bahwa pesan terlalu sering
+      io.emit("chat message", {
+        username: "Atmin Marah",
+        color: "red",
+        value:
+          "https://pm1.aminoapps.com/6382/91d1e56321329121009aedec0620e43d4c8437ea_00.jpg",
+        timestamp,
+      });
+      return; // Keluar dari fungsi untuk menghentikan pengiriman pesan lebih lanjut
+    }
+
+    // Mengecek apakah klien telah mencapai batas pesan maksimum dalam jangka waktu tertentu
+
+    // Perbarui informasi pesan untuk klien ini
+    messageInfo[clientId].count++;
+    messageInfo[clientId].lastSent = Date.now();
 
     // Ambil warna pengguna dari MongoDB menggunakan username
     const user = await userModel.findOne({ username: msg.username });
@@ -217,9 +255,45 @@ io.on("connection", (socket) => {
   });
 
   socket.on("image", async (data) => {
+    // Mendapatkan ID klien yang terkait dengan socket
+    const clientId = socket.id;
     const timestamp = DateTime.now()
       .setZone("Asia/Jakarta")
       .toLocaleString(DateTime.TIME_SIMPLE);
+    // Inisialisasi informasi pesan untuk klien ini jika belum ada
+    if (!messageInfo[clientId]) {
+      messageInfo[clientId] = {
+        count: 0,
+        lastSent: Date.now() - 1000, // Inisialisasi dengan waktu 2 detik yang lalu
+      };
+    }
+    if (Date.now() - messageInfo[clientId].lastSent >= 2000) {
+      messageInfo[clientId].count = 0;
+    }
+    // Mengecek apakah sudah melewati batas waktu 2 detik sejak pesan terakhir
+    if (
+      Date.now() - messageInfo[clientId].lastSent < 2000 &&
+      messageInfo[clientId].count >= 5
+    ) {
+      // Perbarui informasi pesan untuk klien ini
+      messageInfo[clientId].count++;
+      messageInfo[clientId].lastSent = Date.now();
+      // Kirim pesan ke klien bahwa pesan terlalu sering
+      io.emit("chat message", {
+        username: "Atmin Marah",
+        color: "red",
+        value:
+          "https://pm1.aminoapps.com/6382/91d1e56321329121009aedec0620e43d4c8437ea_00.jpg",
+        timestamp,
+      });
+      return; // Keluar dari fungsi untuk menghentikan pengiriman pesan lebih lanjut
+    }
+
+    // Mengecek apakah klien telah mencapai batas pesan maksimum dalam jangka waktu tertentu
+
+    // Perbarui informasi pesan untuk klien ini
+    messageInfo[clientId].count++;
+    messageInfo[clientId].lastSent = Date.now();
 
     // Dapatkan warna pengguna dari users object
     const user = await userModel.findOne({ username: data.username });
