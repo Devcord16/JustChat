@@ -306,7 +306,7 @@
         window.scrollTo(0, document.body.scrollHeight);
       });
 
-      socket.on("image", (data) => {
+      socket.on("image", (msg) => {
         const item = document.createElement("li");
         const usernameElement = document.createElement("strong");
         const timestampElement = document.createElement("span");
@@ -326,7 +326,7 @@
 
         item.classList.add("list-group-item", "border-0");
         const imageElement = document.createElement("img");
-        imageElement.src = data.imageData;
+        imageElement.src = msg.imageData;
         imageElement.classList.add("message-image");
 
         messages.appendChild(item);
