@@ -14,17 +14,31 @@
     <%- include("import.ejs") %>
   </head>
   <style>
+    :root {
+      --bg: #f5eee6;
+      --primary: #f3d7ca;
+      --secondary: #e1c7bb;
+    }
+    body,
+    .card-body {
+      background-color: var(--bg);
+    }
     body {
-      background-color: #36393f;
-      color: #dcddde;
+      background: repeating-linear-gradient(
+        45deg,
+        black,
+        black 1px,
+        var(--bg) 1px,
+        var(--bg) 20px
+      );
     }
-
-    .navbar {
-      background-color: #36393f;
+    .bg-light {
+      background-color: var(--primary) !important;
+      border-bottom: solid 3px black;
+      border-left: solid 3px black;
+      border-right: solid 3px black;
     }
-
     .navbar-brand {
-      color: #7289da;
       font-weight: bold;
     }
 
@@ -32,53 +46,20 @@
       margin-top: 70px;
       margin-bottom: 100px;
     }
-    .bg-dark {
-      background-color: #2f3136 !important;
-    }
+
     .card-body {
-      padding: 15px;
-      background-color: #2f3136;
       border-radius: 8px;
+      padding: 10px;
+      border: solid 3px black;
+      -webkit-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+      -moz-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+      box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
     }
 
-    .list-group-item {
-      background-color: #2f3136 !important;
-      color: #dcddde;
-      word-wrap: break-word;
-    }
-
-    .form-control {
-      color: #dcddde;
-      background-color: #40444b;
-      border: none;
-    }
-    .form-control:focus {
-      color: #dcddde;
-      background-color: #40444b;
-      border: none;
-    }
-    .form-control::placeholder {
-      color: #899499;
-      opacity: 1;
-    }
-
-    .input-group-append button {
-      background-color: #7289da;
-      color: #dcddde;
-      border: none;
-    }
-
-    .input-group-append button:hover {
-      background-color: #677bc4;
-    }
-
-    .card-footer {
-      background-color: #2f3136;
-    }
     img {
       max-width: 400px;
       object-fit: cover;
-      margin: 20px;
+      margin-top: 20px;
       border-radius: 16px;
     }
     .loading-spinner {
@@ -100,11 +81,37 @@
       }
     }
     .message-image {
-      width: auto;
+      width: 100%;
+      border: 3px solid black !important;
+    }
+
+    /* Memberikan warna latar belakang utama pada setiap item ganjil */
+    .list-group-item {
+      white-space: normal;
+      border: 2px solid black !important;
+      background-color: #f7f7f7 !important;
+      overflow: auto;
+    }
+    .form-control {
+      border: solid 3px black;
+    }
+    .card-footer {
+      border-top: solid 3px black;
+      background: var(--bg);
+    }
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: black;
+      border: 3px solid black !important;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: black;
+      border: 3px solid black !important;
     }
   </style>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-light">
       <a class="navbar-brand" href="#" id="juduul">Fathin's Connection</a>
 
       <ul class="navbar-nav ml-auto">
@@ -119,30 +126,56 @@
       </ul>
     </nav>
     <div class="container" style="margin-bottom: 150px">
-      <div class="card-body">
-        <ul id="messages" class="list-group">
-          <% chat.forEach(element => { %>
-          <!-- If this is an image message -->
-          <li id="wa" class="list-group-item border-0">
-            <strong class="name" style="color: <%= element.color %>">
-              <span style="color: gray !important"
-                ><%= element.timestamp.replace("AM", "").replace("PM", "")
-                %></span
-              >
-              <%= element.username %>
-            </strong>
-            <% if(!element.isImage) {%>
-            <span class="text-value"> <%= element.value %> </span><% } %>
-            <br />
+      <div class="row pt-4 pb-4">
+        <div class="col-sm-8">
+          <div class="card-body">
+            <ul id="messages" class="list-group">
+              <% chat.forEach(element => { %>
+              <!-- If this is an image message -->
+              <li id="wa" class="list-group-item border-0">
+                <strong class="name" style="color: <%= element.color %>">
+                  <span style="color: gray !important"
+                    ><%= element.timestamp.replace("AM", "").replace("PM", "")
+                    %></span
+                  >
+                  <span class="name-value"><%= element.username %></span>
+                </strong>
+                <% if(!element.isImage) {%>
+                <span class="text-value"> <%= element.value %> </span><% } %>
+                <span class="text-value d-none"> </span>
+                <br />
 
+                <img
+                  src="<%= element.value %>"
+                  class="message-image"
+                  alt="Image"
+                  onerror="this.remove()"
+                /><% }); %>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="card bg-transparent border-0">
             <img
-              src="<%= element.value %>"
-              class="message-image"
-              alt="Image"
-              onerror="this.remove()"
-            /><% }); %>
-          </li>
-        </ul>
+              src="https://media1.tenor.com/m/uGN3n2O03GIAAAAC/anime-wave.gif"
+              class="card-img-top message-image border-lg"
+              style="border-radius: 0 !important"
+              alt="..."
+            />
+            <div class="card-body mt-2">
+              <h3 class="card-title">System</h3>
+              <p class="card-text">Halo, rulesnya jangan spam aja ya:)</p>
+            </div>
+            <div class="card-body mt-2">
+              <h3 class="card-title">About</h3>
+              <p class="card-text">Dibuat Oleh Fathin, cek portofolionya yuk</p>
+              <a class="btn btn-secondary" href="https://www.fathin.my.id"
+                >Apaan Tuh?</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div
@@ -156,7 +189,7 @@
       >
         <label
           for="image"
-          class="btn btn-secondary mt-2 p-2"
+          class="btn btn-secondary mt-3 p-2"
           style="height: 100%"
         >
           <input
@@ -172,7 +205,7 @@
         <button
           type="button"
           onclick="uploadImage()"
-          class="btn btn-primary p-2"
+          class="btn btn-primary mt-2 p-2"
           style="height: 100%"
         >
           <i class="fa fa-upload" aria-hidden="true"></i>
@@ -195,7 +228,7 @@
             placeholder="Message at # 💬 General!"
           />
           <div class="input-group-append">
-            <button class="btn" type="button" onclick="send()">
+            <button class="btn btn-secondary" type="button" onclick="send()">
               <i class="fa fa-paper-plane" aria-hidden="true"></i>
             </button>
           </div>
@@ -219,6 +252,7 @@
         messages.forEach((child) => {
           const valueItem = child.querySelector(".text-value");
           const imageElement = child.querySelector(".message-image");
+          const nameItem = child.querySelector(".name-value");
 
           // Check if the message contains a tag or pmessages for userData
           if (
@@ -234,7 +268,10 @@
 
           if (valueItem && valueItem.textContent.includes("pmessages: ")) {
             // Check if pmessages is for userData
-            if (!valueItem.textContent.includes("@" + userData)) {
+            if (
+              !valueItem.textContent.includes("@" + userData) ||
+              !nameItem.textContent.includes(userData)
+            ) {
               // Remove the message if it's not for userData
               child.remove();
               if (imageElement) {
@@ -307,20 +344,20 @@
         const usernameElement = document.createElement("strong");
         const timestampElement = document.createElement("span");
         const valueItem = document.createElement("span");
+        const nameItem = document.createElement("span");
 
         timestampElement.textContent = msg.timestamp
           .replace("AM", "")
           .replace("PM", "");
         timestampElement.style.color = "gray";
         usernameElement.style.color = msg.color;
-        usernameElement.appendChild(timestampElement);
-
-        usernameElement.appendChild(
-          document.createTextNode(` ${msg.username} `)
-        );
 
         valueItem.textContent += msg.value;
         valueItem.classList.add("text-value");
+        nameItem.textContent = ` ${msg.username} `;
+        nameItem.classList.add("name-value");
+        usernameElement.appendChild(timestampElement);
+        usernameElement.appendChild(nameItem);
 
         if (msg.value.includes("@" + userData || "@everyone")) {
           if (!msg.value.includes("pmessages:")) {
@@ -338,22 +375,26 @@
         item.classList.add("border-0");
 
         const imageElement = document.createElement("img");
+        imageElement.classList.add("message-image");
         imageElement.src = msg.value;
         imageElement.onerror = function () {
           this.remove(); // Hapus elemen gambar jika terjadi error
         };
         if (msg.value.includes("pmessages: ")) {
-          if (msg.value.includes("@" + userData)) {
+          if (
+            msg.value.includes("@" + userData) ||
+            msg.username.includes(userData)
+          ) {
             item.appendChild(usernameElement);
             item.appendChild(valueItem);
+            item.appendChild(imageElement);
             messages.appendChild(item);
-            messages.appendChild(imageElement);
           }
         } else {
           item.appendChild(usernameElement);
           item.appendChild(valueItem);
+          item.appendChild(imageElement);
           messages.appendChild(item);
-          messages.appendChild(imageElement);
         }
 
         // Scroll to the bottom after adding a new message with a slight delay
