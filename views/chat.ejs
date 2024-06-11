@@ -330,8 +330,12 @@
             messages.appendChild(item);
           }
         } else {
+          const brItem = document.createElement("br");
+
           item.appendChild(usernameElement);
           item.appendChild(valueItem);
+          item.appendChild(brItem);
+
           item.appendChild(imageElement);
           messages.appendChild(item);
         }

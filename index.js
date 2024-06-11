@@ -194,7 +194,8 @@ mongoose
         });
 
         const messageInfo = {};
-
+        const badWordsString = process.env.katakasar;
+        const badword = badWordsString.split(",");
         io.on("connection", (socket) => {
           messageInfo[0] = {
             lastUsername: "",
@@ -215,6 +216,35 @@ mongoose
                 lastMessage: "",
               };
             }
+            const containsBadWord = badword.some((word) => {
+              const regex = new RegExp(`\\b${word}\\b`, "i");
+              return regex.test(lastMessage);
+            });
+            if (containsBadWord) {
+              // Perbarui informasi pesan untuk klien ini
+              messageInfo[clientId].count++;
+              messageInfo[clientId].lastSent = Date.now();
+              messageInfo[clientId].lastMessage = lastMessage;
+              messageInfo[0].lastMessage = lastMessage;
+              // Kirim pesan ke klien bahwa pesan terlalu sering
+              if (!messageInfo[clientId].warn) {
+                io.emit("chat message", {
+                  username: "Atmin Marah",
+                  color: "red",
+                  value: `@${user} JANGAN TOXIC WOY`,
+                  timestamp,
+                });
+                io.emit("chat message", {
+                  username: "Atmin Marah",
+                  color: "red",
+                  value: `https://media.tenor.com/Lbi95-I1Vw0AAAAi/menhera-chan-annoyed.gif`,
+                  timestamp,
+                });
+
+                messageInfo[clientId].warn = true;
+              }
+              return true; // Keluar dari fungsi untuk menghentikan pengiriman pesan lebih lanjut
+            }
             if (Date.now() - messageInfo[clientId].lastSent >= 2000) {
               messageInfo[clientId].count = 0;
               messageInfo[clientId].warn = false;
@@ -224,7 +254,7 @@ mongoose
             if (
               lastMessage.length > 169 || // Jika panjang pesan lebih dari 169 karakter
               (Date.now() - messageInfo[clientId].lastSent < 2000 &&
-                (messageInfo[clientId].count >= 2 ||
+                (messageInfo[clientId].count >= 5 ||
                   messageInfo[clientId].lastMessage === lastMessage ||
                   messageInfo[clientId].lastMessage ===
                     messageInfo[0].lastMessage))
