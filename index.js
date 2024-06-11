@@ -196,6 +196,10 @@ mongoose
         const messageInfo = {};
 
         io.on("connection", (socket) => {
+          messageInfo[0] = {
+            lastUsername: "",
+            lastMessage: "",
+          };
           function giveMessageInfo(user, lastMessage) {
             // Mendapatkan ID klien yang terkait dengan socket
             const clientId = socket.id;
@@ -221,12 +225,15 @@ mongoose
               lastMessage.length > 169 || // Jika panjang pesan lebih dari 169 karakter
               (Date.now() - messageInfo[clientId].lastSent < 2000 &&
                 (messageInfo[clientId].count >= 2 ||
-                  messageInfo[clientId].lastMessage === lastMessage))
+                  messageInfo[clientId].lastMessage === lastMessage ||
+                  messageInfo[clientId].lastMessage ===
+                    messageInfo[0].lastMessage))
             ) {
               // Perbarui informasi pesan untuk klien ini
               messageInfo[clientId].count++;
               messageInfo[clientId].lastSent = Date.now();
               messageInfo[clientId].lastMessage = lastMessage;
+              messageInfo[0].lastMessage = lastMessage;
               // Kirim pesan ke klien bahwa pesan terlalu sering
               if (!messageInfo[clientId].warn) {
                 io.emit("chat message", {
@@ -251,6 +258,7 @@ mongoose
             messageInfo[clientId].count++;
             messageInfo[clientId].lastSent = Date.now();
             messageInfo[clientId].lastMessage = lastMessage;
+            messageInfo[0].lastMessage = lastMessage;
 
             return false;
           }
