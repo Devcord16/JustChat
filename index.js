@@ -22,7 +22,7 @@ mongoose
     var users = []; // Array untuk menyimpan data pengguna yang mendaftar
     var chat = [];
     mainModel.find({}, null).then((docs) => {
-      chat = docs;
+      chat = docs.slice(-10);
       http.listen(3000, () => {
         console.log("Server is running on http://localhost:3000");
         function getRandomColor() {
@@ -196,7 +196,7 @@ mongoose
         const messageInfo = {};
 
         io.on("connection", (socket) => {
-          function giveMessageInfo(user) {
+          function giveMessageInfo(user, lastMessage) {
             // Mendapatkan ID klien yang terkait dengan socket
             const clientId = socket.id;
             const timestamp = DateTime.now()
@@ -208,20 +208,24 @@ mongoose
                 count: 0,
                 lastSent: Date.now() - 1000, // Inisialisasi dengan waktu 2 detik yang lalu,
                 warn: false,
+                lastMessage: "",
               };
             }
             if (Date.now() - messageInfo[clientId].lastSent >= 2000) {
               messageInfo[clientId].count = 0;
               messageInfo[clientId].warn = false;
+              messageInfo[clientId].lastMessage = "";
             }
             // Mengecek apakah sudah melewati batas waktu 2 detik sejak pesan terakhir
             if (
               Date.now() - messageInfo[clientId].lastSent < 2000 &&
-              messageInfo[clientId].count >= 2
+              (messageInfo[clientId].count >= 2 ||
+                messageInfo[clientId].lastMessage === lastMessage)
             ) {
               // Perbarui informasi pesan untuk klien ini
               messageInfo[clientId].count++;
               messageInfo[clientId].lastSent = Date.now();
+              messageInfo[clientId].lastMessage = lastMessage;
               // Kirim pesan ke klien bahwa pesan terlalu sering
               if (!messageInfo[clientId].warn) {
                 io.emit("chat message", {
@@ -242,16 +246,15 @@ mongoose
               return true; // Keluar dari fungsi untuk menghentikan pengiriman pesan lebih lanjut
             }
 
-            // Mengecek apakah klien telah mencapai batas pesan maksimum dalam jangka waktu tertentu
-
             // Perbarui informasi pesan untuk klien ini
             messageInfo[clientId].count++;
             messageInfo[clientId].lastSent = Date.now();
+            messageInfo[clientId].lastMessage = lastMessage;
 
             return false;
           }
           socket.on("chat message", async (msg) => {
-            const checkSpam = giveMessageInfo(msg.username);
+            const checkSpam = giveMessageInfo(msg.username, msg.value);
             if (checkSpam) return;
             const timestamp = DateTime.now()
               .setZone("Asia/Jakarta")

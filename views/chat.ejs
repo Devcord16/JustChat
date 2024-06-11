@@ -20,8 +20,9 @@
       --secondary: #e1c7bb;
     }
     body,
-    .card-body {
-      background-color: var(--bg);
+    .card-body,
+    .bg-primary {
+      background-color: var(--bg) !important;
     }
     body {
       background: repeating-linear-gradient(
@@ -54,6 +55,11 @@
       -webkit-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
       -moz-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
       box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+    }
+    .btn:hover {
+      -webkit-box-shadow: 7px 7px 0px -4px rgba(0, 0, 0, 1) !important;
+      -moz-box-shadow: 7px 7px 0px -4px rgba(0, 0, 0, 1) !important;
+      box-shadow: 7px 7px 0px -4px rgba(0, 0, 0, 1) !important;
     }
 
     img {
@@ -88,9 +94,16 @@
     /* Memberikan warna latar belakang utama pada setiap item ganjil */
     .list-group-item {
       white-space: normal;
-      border: 2px solid black !important;
+      border: 3px solid black !important;
       background-color: #f7f7f7 !important;
       overflow: auto;
+      font-weight: bold;
+    }
+    .list-group-item:hover {
+      background-color: #fbfbfb !important;
+    }
+    .card-body::-webkit-scrollbar {
+      display: none;
     }
     .form-control {
       border: solid 3px black;
@@ -117,18 +130,61 @@
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
           <button
-            class="btn btn-outline-danger rounded-pill"
+            class="btn btn-success"
+            style="border: 2px solid black"
             onclick="logOut()"
           >
-            <i class="fa fa-sign-out" aria-hidden="true"></i>
+            Grass <i class="fa fa-sign-out" aria-hidden="true"></i>
           </button>
         </li>
       </ul>
     </nav>
-    <div class="container" style="margin-bottom: 150px">
-      <div class="row pt-4 pb-4">
-        <div class="col-sm-8">
-          <div class="card-body">
+    <div class="container">
+      <div class="lg-row mt-3">
+        <h1
+          id="nama"
+          style="width: fit-content"
+          class="font-weight-bold bg-primary rounded-pill"
+        ></h1>
+        <p class="text-end bg-primary" style="width: fit-content">
+          Fathin's Chat is real-time messaging app made by Fathin (Nick: Coder
+          Hero) to learn about real-time messaging app
+        </p>
+      </div>
+
+      <hr style="border: 2px solid black" />
+      <div class="row pb-4">
+        <div class="col-sm-4">
+          <div class="card bg-transparent border-0">
+            <img
+              src="https://media1.tenor.com/m/uGN3n2O03GIAAAAC/anime-wave.gif"
+              class="card-img-top message-image rounded-xl"
+              style="
+                -webkit-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+                -moz-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+                box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+              "
+              alt="..."
+            />
+            <div class="card-body mt-2">
+              <h3 class="card-title font-weight-bold">System</h3>
+              <p class="card-text">Hello, the rules don't spam and toxic</p>
+            </div>
+            <div class="card-body mt-2">
+              <h3 class="card-title font-weight-bold">About</h3>
+              <p class="card-text">Made by Fathin, check him!</p>
+              <a class="btn btn-secondary" href="https://www.fathin.my.id"
+                >Click me, Sensei (0u0)</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-8 pt-3">
+          <div
+            class="card-body"
+            id="messages-parent"
+            style="height: fit-content; overflow-y: scroll; max-height: 570px"
+          >
             <ul id="messages" class="list-group">
               <% chat.forEach(element => { %>
               <!-- If this is an image message -->
@@ -153,27 +209,6 @@
                 /><% }); %>
               </li>
             </ul>
-          </div>
-        </div>
-        <div class="col-sm-4">
-          <div class="card bg-transparent border-0">
-            <img
-              src="https://media1.tenor.com/m/uGN3n2O03GIAAAAC/anime-wave.gif"
-              class="card-img-top message-image border-lg"
-              style="border-radius: 0 !important"
-              alt="..."
-            />
-            <div class="card-body mt-2">
-              <h3 class="card-title">System</h3>
-              <p class="card-text">Halo, rulesnya jangan spam aja ya:)</p>
-            </div>
-            <div class="card-body mt-2">
-              <h3 class="card-title">About</h3>
-              <p class="card-text">Dibuat Oleh Fathin, cek portofolionya yuk</p>
-              <a class="btn btn-secondary" href="https://www.fathin.my.id"
-                >Apaan Tuh?</a
-              >
-            </div>
           </div>
         </div>
       </div>
@@ -310,7 +345,19 @@
           reader.readAsDataURL(file);
         }
       }
-      document.getElementById("juduul").textContent = userData;
+      document.getElementById("nama").textContent = `Heyyo, ${userData}`;
+      const date = new Date();
+
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+
+      const formattedDate = date.toLocaleDateString("en-US", options);
+
+      document.getElementById("juduul").textContent = formattedDate;
 
       function logOut() {
         localStorage.removeItem("loggedInUser");
@@ -320,12 +367,14 @@
       if (!userData) {
         window.location.href = "/";
       }
+      const messages = document.getElementById("messages");
 
+      // Panggil fungsi scrollToBottom setiap kali ada perubahan di dalam elemen
       const socket = io();
       const form = document.getElementById("form");
       const input = document.getElementById("input");
-      const messages = document.getElementById("messages");
-
+      const messagesDiv = document.getElementById("messages-parent");
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         send();
@@ -397,8 +446,9 @@
           messages.appendChild(item);
         }
 
-        // Scroll to the bottom after adding a new message with a slight delay
-        window.scrollTo(0, document.body.scrollHeight);
+        requestAnimationFrame(() => {
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
       });
 
       socket.on("image", (msg) => {
@@ -428,15 +478,9 @@
         messages.appendChild(imageElement);
 
         // Scroll to the bottom after adding a new message with a slight delay
-        window.scrollTo(0, document.body.scrollHeight);
       });
 
       // Scroll to the bottom when the page is initially loaded
-      window.onload = function () {
-        setTimeout(() => {
-          window.scrollTo(0, document.body.scrollHeight);
-        }, 100);
-      };
     </script>
   </body>
 </html>

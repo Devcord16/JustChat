@@ -42,3 +42,114 @@
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2998592050723815"
   crossorigin="anonymous"
 ></script>
+<link href="https://fonts.googleapis.com/css?family=Mulish" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f5eee6;
+    --primary: #f3d7ca;
+    --secondary: #e1c7bb;
+  }
+  body,
+  .card-body,
+  .bg-primary {
+    background-color: var(--bg) !important;
+  }
+  body {
+    font-family: "Mulish";
+    background: repeating-linear-gradient(
+      45deg,
+      black,
+      black 1px,
+      var(--bg) 1px,
+      var(--bg) 20px
+    );
+  }
+  .bg-secondary {
+    background-color: var(--primary) !important;
+    border: solid 3px black;
+    -webkit-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+    box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+  }
+  .bg-light {
+    background-color: var(--primary) !important;
+    border-bottom: solid 3px black;
+    border-left: solid 3px black;
+    border-right: solid 3px black;
+  }
+  .navbar-brand {
+    font-weight: bold;
+  }
+
+  .container {
+    margin-top: 70px;
+    margin-bottom: 100px;
+  }
+
+  .card-body {
+    border-radius: 8px;
+    padding: 10px;
+    border: solid 3px black;
+    -webkit-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+    box-shadow: 8px 8px 0px -4px rgba(0, 0, 0, 1);
+  }
+
+  img {
+    max-width: 400px;
+    object-fit: cover;
+    margin-top: 20px;
+    border-radius: 16px;
+  }
+  .loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #dcddde;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .message-image {
+    width: 100%;
+    border: 3px solid black !important;
+  }
+
+  /* Memberikan warna latar belakang utama pada setiap item ganjil */
+  .list-group-item {
+    white-space: normal;
+    border: 3px solid black !important;
+    background-color: #f7f7f7 !important;
+    overflow: auto;
+    font-weight: bold;
+  }
+  .card-body::-webkit-scrollbar {
+    display: none;
+  }
+  .form-control {
+    border: solid 3px black;
+  }
+  .card-footer {
+    border-top: solid 3px black;
+    background: var(--bg);
+  }
+  .btn-secondary {
+    background-color: var(--secondary);
+    color: black;
+    border: 3px solid black !important;
+  }
+  .btn-primary {
+    background-color: var(--primary);
+    color: black;
+    border: 3px solid black !important;
+  }
+</style>
