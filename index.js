@@ -218,9 +218,10 @@ mongoose
             }
             // Mengecek apakah sudah melewati batas waktu 2 detik sejak pesan terakhir
             if (
-              Date.now() - messageInfo[clientId].lastSent < 2000 &&
-              (messageInfo[clientId].count >= 2 ||
-                messageInfo[clientId].lastMessage === lastMessage)
+              lastMessage.length > 169 || // Jika panjang pesan lebih dari 169 karakter
+              (Date.now() - messageInfo[clientId].lastSent < 2000 &&
+                (messageInfo[clientId].count >= 2 ||
+                  messageInfo[clientId].lastMessage === lastMessage))
             ) {
               // Perbarui informasi pesan untuk klien ini
               messageInfo[clientId].count++;
