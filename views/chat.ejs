@@ -474,10 +474,13 @@
         imageElement.src = msg.imageData;
         imageElement.classList.add("message-image");
 
+        item.appendChild(imageElement);
         messages.appendChild(item);
-        messages.appendChild(imageElement);
 
         // Scroll to the bottom after adding a new message with a slight delay
+        requestAnimationFrame(() => {
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
       });
 
       // Scroll to the bottom when the page is initially loaded
