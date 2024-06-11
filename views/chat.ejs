@@ -467,13 +467,14 @@
           document.createTextNode(` ${msg.username} `)
         );
 
-        item.appendChild(usernameElement);
-
         item.classList.add("list-group-item", "border-0");
         const imageElement = document.createElement("img");
         imageElement.src = msg.imageData;
         imageElement.classList.add("message-image");
 
+        const valueItem = document.createElement("br");
+        item.appendChild(usernameElement);
+        item.appendChild(valueItem);
         item.appendChild(imageElement);
         messages.appendChild(item);
 
