@@ -199,7 +199,7 @@ mongoose
         io.on("connection", (socket) => {
           messageInfo[0] = {
             lastUsername: "",
-            lastMessage: "",
+            lastMessage: chat[chat.length - 1].value,
           };
           function giveMessageInfo(user, lastMessage) {
             // Mendapatkan ID klien yang terkait dengan socket
@@ -248,7 +248,6 @@ mongoose
             if (Date.now() - messageInfo[clientId].lastSent >= 2000) {
               messageInfo[clientId].count = 0;
               messageInfo[clientId].warn = false;
-              messageInfo[clientId].lastMessage = "";
             }
             // Mengecek apakah sudah melewati batas waktu 2 detik sejak pesan terakhir
             if (
