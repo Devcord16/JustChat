@@ -142,7 +142,8 @@ mongoose
             res.redirect("/chat");
           }
         );
-
+        const badWordsString = process.env.katakasar;
+        const badword = badWordsString.split(",");
         // Implementasi signup
         app.post("/signup", async (req, res) => {
           const { username, password } = req.body;
@@ -151,8 +152,12 @@ mongoose
           const isUsernameTaken = users.some(
             (user) => user.username === username || user.username.length > 50
           );
+          const containsBadWord = badword.some((word) => {
+            const regex = new RegExp(`\\b${word}\\b`, "i");
+            return regex.test(lastMessage);
+          });
 
-          if (isUsernameTaken) {
+          if (isUsernameTaken || containsBadWord) {
             return res.send(
               "Maaf, username tersebut sudah ada. Anda bisa menambahkan angka atau kata lain untuk membuat username Anda unik. <a href='/signup' > Kembali </a>"
             );
@@ -194,8 +199,7 @@ mongoose
         });
 
         const messageInfo = {};
-        const badWordsString = process.env.katakasar;
-        const badword = badWordsString.split(",");
+
         io.on("connection", (socket) => {
           messageInfo[0] = {
             lastUsername: "",
