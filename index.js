@@ -149,7 +149,7 @@ mongoose
 
           // Periksa apakah username sudah ada
           const isUsernameTaken = users.some(
-            (user) => user.username === username
+            (user) => user.username === username || user.username.length > 50
           );
 
           if (isUsernameTaken) {
