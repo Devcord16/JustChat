@@ -28,7 +28,7 @@ mongoose
         function getRandomColor() {
           const colors = [
             "#f44336",
-            "#03a9f4",
+            "#254336",
             "green",
             "#ff5722",
             "#5865f2",
